@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SummAI - Advanced NLP Text Summarizer</title>
+    <meta name="description" content="NLP-powered text summarization tool with CNN/DailyMail dataset evaluation">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SummAI</h1>
+            <p class="subtitle">Harness the power of Natural Language Processing to distill information instantly.</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tabs" id="tabs">
+            <button class="tab active" data-tab="summarizer">Summarizer</button>
+            <button class="tab" data-tab="dataset">CNN/DailyMail Dataset</button>
+            <button class="tab" data-tab="evaluate">Evaluation</button>
+        </nav>
+
+        <!-- Tab 1: Summarizer -->
+        <main class="summarizer-card tab-content active" id="tab-summarizer">
+            <div class="input-group">
+                <label for="input-text">Input Content</label>
+                <textarea id="input-text" placeholder="Paste your long text, article, or document here..."></textarea>
+            </div>
+
+            <div class="controls">
+                <div class="sentence-count">
+                    <label for="num-sentences">Summary Length (Sentences):</label>
+                    <input type="number" id="num-sentences" value="3" min="1" max="10">
+                </div>
+                <button id="summarize-btn">
+                    <span>Summarize Now</span>
+                    <div class="loader" id="loader"></div>
+                </button>
+            </div>
+
+            <div class="result-section" id="result-section">
+                <div class="result-card">
+                    <h3>Summary Output</h3>
+                    <p id="summary-output"></p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Tab 2: Dataset Explorer -->
+        <main class="summarizer-card tab-content" id="tab-dataset">
+            <div class="dataset-header">
+                <h2 class="section-title">CNN/DailyMail Dataset Explorer</h2>
+                <p class="section-desc">Load real news articles from the CNN/DailyMail dataset, summarize them, and compare with human-written reference summaries.</p>
+                <div id="dataset-info" class="dataset-stats"></div>
+            </div>
+
+            <div class="controls" style="margin-bottom: 1.5rem;">
+                <div class="sentence-count">
+                    <label for="dataset-split">Split:</label>
+                    <select id="dataset-split" class="select-input">
+                        <option value="test">Test</option>
+                        <option value="validation">Validation</option>
+                        <option value="train">Train</option>
+                    </select>
+                </div>
+                <div class="sentence-count">
+                    <label for="dataset-num-sentences">Sentences:</label>
+                    <input type="number" id="dataset-num-sentences" value="3" min="1" max="10">
+                </div>
+                <button id="load-sample-btn">
+                    <span>Load Random Article</span>
+                    <div class="loader" id="dataset-loader"></div>
+                </button>
+            </div>
+
+            <div class="result-section visible" id="dataset-result-section" style="display:none;">
+                <!-- Article -->
+                <div class="result-card" style="margin-bottom: 1.5rem;">
+                    <h3>Original Article</h3>
+                    <p id="dataset-article" class="scrollable-text"></p>
+                </div>
+
+                <!-- Reference summary -->
+                <div class="result-card reference-card" style="margin-bottom: 1.5rem;">
+                    <h3>Reference Summary <span class="badge">Human-written</span></h3>
+                    <p id="dataset-reference"></p>
+                </div>
+
+                <!-- Generated summary -->
+                <div class="result-card generated-card" style="margin-bottom: 1.5rem;">
+                    <h3>Generated Summary <span class="badge badge-ai">Our Model</span></h3>
+                    <p id="dataset-generated"></p>
+                </div>
+
+                <!-- ROUGE scores -->
+                <div class="result-card scores-card">
+                    <h3>ROUGE Scores</h3>
+                    <div id="rouge-scores" class="scores-grid"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Tab 3: Evaluation -->
+        <main class="summarizer-card tab-content" id="tab-evaluate">
+            <div class="dataset-header">
+                <h2 class="section-title">Batch Evaluation</h2>
+                <p class="section-desc">Evaluate the summarizer on multiple articles from the test set and see aggregate ROUGE scores.</p>
+            </div>
+
+            <div class="controls" style="margin-bottom: 1.5rem;">
+                <div class="sentence-count">
+                    <label for="eval-split">Split:</label>
+                    <select id="eval-split" class="select-input">
+                        <option value="test">Test</option>
+                        <option value="validation">Validation</option>
+                        <option value="train">Train</option>
+                    </select>
+                </div>
+                <div class="sentence-count">
+                    <label for="eval-samples">Samples:</label>
+                    <input type="number" id="eval-samples" value="10" min="1" max="50">
+                </div>
+                <div class="sentence-count">
+                    <label for="eval-sentences">Sentences:</label>
+                    <input type="number" id="eval-sentences" value="3" min="1" max="10">
+                </div>
+                <button id="run-eval-btn">
+                    <span>Run Evaluation</span>
+                    <div class="loader" id="eval-loader"></div>
+                </button>
+            </div>
+
+            <div class="result-section visible" id="eval-result-section" style="display:none;">
+                <!-- Average scores -->
+                <div class="result-card scores-card" style="margin-bottom: 1.5rem;">
+                    <h3>Average ROUGE Scores</h3>
+                    <div id="eval-averages" class="scores-grid"></div>
+                </div>
+
+                <!-- Individual results -->
+                <div class="result-card">
+                    <h3>Individual Results</h3>
+                    <div id="eval-results" class="eval-results-list"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 NLP Project - Text Summarization Module</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
