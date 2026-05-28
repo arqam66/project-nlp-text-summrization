@@ -13,15 +13,18 @@ for resource, path in [('punkt', 'tokenizers/punkt'),
     try:
         nltk.data.find(path)
     except (LookupError, OSError):
-        nltk.download(resource, quiet=True)
+        try:
+            nltk.download(resource, quiet=True)
+        except Exception:
+            pass
 
 
-# ── CNN/DailyMail dataset helpers ──────────────────────────────────────────
+# ── Sample dataset helpers ──────────────────────────────────────────────────
 
-DATASET_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cnn_dailymail')
+DATASET_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sample_data')
 
 def _load_csv_rows(filename, max_rows=None):
-    """Load rows from a CNN/DailyMail CSV file."""
+    """Load rows from a Sample CSV file."""
     filepath = os.path.join(DATASET_DIR, filename)
     if not os.path.exists(filepath):
         return []
@@ -142,7 +145,8 @@ def summarize_text(text, num_sentences=3):
     if num_sentences == 0:
         return text
 
-    summary_sentences = heapq.nlargest(num_sentences, sentence_scores, key=sentence_scores.get)
+    top_sentences = set(heapq.nlargest(num_sentences, sentence_scores, key=sentence_scores.get))
+    summary_sentences = [sent for sent in sentences if sent in top_sentences]
     summary = ' '.join(summary_sentences)
     
     return summary
@@ -267,7 +271,7 @@ if __name__ == "__main__":
     # Show dataset info
     info = get_dataset_info()
     if info:
-        print("CNN/DailyMail Dataset:")
+        print("Sample Dataset:")
         for split, count in info.items():
             print(f"  {split}: {count:,} articles")
         print()
