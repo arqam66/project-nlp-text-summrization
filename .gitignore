@@ -3,3 +3,7 @@ cnn_dailymail/
 __pycache__/
 .pyc
 .antgravityclifix
+.venv/
+venv/
+env/
+*.csv
