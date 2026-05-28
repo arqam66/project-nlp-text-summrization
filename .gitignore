@@ -1,4 +1,5 @@
 *.csv
 cnn_dailymail/
 __pycache__/
-*.pyc
+.pyc
+.antgravityclifix
