@@ -4,6 +4,7 @@ from summarizer import (
     summarize_text, get_random_sample, get_dataset_info,
     compute_rouge, evaluate_on_dataset
 )
+from gemini_helper import generate_gemini_summary, analyze_text_words
 import os
 
 app = Flask(__name__)
@@ -37,6 +38,41 @@ def summarize():
     try:
         summary = summarize_text(text, int(num_sentences))
         return jsonify({'summary': summary})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/summarize_gemini', methods=['POST'])
+def summarize_gemini():
+    """Generative abstractive summarization using Google Gemini API."""
+    data = request.get_json() or {}
+    text = data.get('text', '')
+    num_sentences = data.get('num_sentences', 3)
+    api_key = data.get('api_key') or request.headers.get('X-Gemini-API-Key', '')
+    
+    if not text:
+        return jsonify({'error': 'No text provided'}), 400
+        
+    try:
+        summary = generate_gemini_summary(text, int(num_sentences), api_key=api_key)
+        return jsonify({'summary': summary})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/analyze_words', methods=['POST'])
+def analyze_words():
+    """Extract key terms and provide contextual word summaries using Google Gemini API."""
+    data = request.get_json() or {}
+    text = data.get('text', '')
+    api_key = data.get('api_key') or request.headers.get('X-Gemini-API-Key', '')
+    
+    if not text:
+        return jsonify({'error': 'No text provided'}), 400
+        
+    try:
+        words_data = analyze_text_words(text, api_key=api_key)
+        return jsonify({'words': words_data})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

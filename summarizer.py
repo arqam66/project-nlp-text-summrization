@@ -29,7 +29,7 @@ def _load_csv_rows(filename, max_rows=None):
     if not os.path.exists(filepath):
         return []
     rows = []
-    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+    with open(filepath, 'r', encoding='utf-8', errors='replace', newline='') as f:
         reader = csv.DictReader(f)
         for i, row in enumerate(reader):
             if max_rows and i >= max_rows:
@@ -41,9 +41,9 @@ def _load_csv_rows(filename, max_rows=None):
 def _count_csv_records(filepath):
     """Count the actual number of CSV records (not raw lines) in a file."""
     count = 0
-    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+    with open(filepath, 'r', encoding='utf-8', errors='replace', newline='') as f:
         reader = csv.reader(f)
-        next(reader, None)  # skip header
+        next(reader, None)
         for _ in reader:
             count += 1
     return count
@@ -77,7 +77,7 @@ def get_random_sample(split='test', count=1):
     indices = set(random.sample(range(total), count))
 
     results = []
-    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+    with open(filepath, 'r', encoding='utf-8', errors='replace', newline='') as f:
         reader = csv.DictReader(f)
         for i, row in enumerate(reader):
             if i in indices:
