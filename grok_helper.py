@@ -96,6 +96,10 @@ def analyze_text_grok(text: str, api_key: str | None = None) -> List[Dict[str, A
         max_tokens=500,
         temperature=0.1,
     )
+    import re
+    json_match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', result)
+    if json_match:
+        result = json_match.group(1)
     try:
         parsed = json.loads(result)
         if isinstance(parsed, list):
