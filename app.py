@@ -28,7 +28,7 @@ def static_files(filename):
 
 @app.route('/summarize', methods=['POST'])
 def summarize():
-    data = request.get_json()
+    data = request.get_json() or {}
     text = data.get('text', '')
     num_sentences = data.get('num_sentences', 3)
     
@@ -45,7 +45,7 @@ def summarize():
 @app.route('/summarize_gemini', methods=['POST'])
 def summarize_gemini():
     """Generative abstractive summarization using Google Gemini API."""
-    data = request.get_json() or {}
+    data = request.get_json() or {} or {}
     text = data.get('text', '')
     num_sentences = data.get('num_sentences', 3)
     api_key = data.get('api_key') or request.headers.get('X-Gemini-API-Key', '')
@@ -63,7 +63,7 @@ def summarize_gemini():
 @app.route('/analyze_words', methods=['POST'])
 def analyze_words():
     """Extract key terms and provide contextual word summaries using Google Gemini API."""
-    data = request.get_json() or {}
+    data = request.get_json() or {} or {}
     text = data.get('text', '')
     api_key = data.get('api_key') or request.headers.get('X-Gemini-API-Key', '')
     
@@ -106,7 +106,7 @@ def dataset_sample():
 @app.route('/dataset/summarize_sample', methods=['POST'])
 def summarize_sample():
     """Summarize a dataset article and compare with reference summary."""
-    data = request.get_json()
+    data = request.get_json() or {}
     article = data.get('article', '')
     highlights = data.get('highlights', '')
     num_sentences = int(data.get('num_sentences', 3))
@@ -131,7 +131,7 @@ def summarize_sample():
 @app.route('/dataset/evaluate', methods=['POST'])
 def evaluate():
     """Run evaluation on random dataset samples."""
-    data = request.get_json() or {}
+    data = request.get_json() or {} or {}
     num_samples = min(int(data.get('num_samples', 10)), 50)
     num_sentences = int(data.get('num_sentences', 3))
     split = data.get('split', 'test')

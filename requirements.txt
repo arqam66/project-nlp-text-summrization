@@ -1,3 +1,4 @@
 nltk
 flask
 flask-cors
+requests
