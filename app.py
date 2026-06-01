@@ -48,7 +48,7 @@ def summarize_grok():
     data = request.get_json() or {} or {}
     text = data.get('text', '')
     num_sentences = data.get('num_sentences', 3)
-    api_key = data.get('api_key') or request.headers.get('X-XAI-API-Key', '')
+    api_key = data.get('api_key') or request.headers.get('X-XAI-API-Key', '') or os.environ.get('XAI_API_KEY', '')
     
     if not text:
         return jsonify({'error': 'No text provided'}), 400
@@ -65,7 +65,7 @@ def analyze_words():
     """Extract key terms and provide contextual word summaries using xAI Grok API."""
     data = request.get_json() or {} or {}
     text = data.get('text', '')
-    api_key = data.get('api_key') or request.headers.get('X-XAI-API-Key', '')
+    api_key = data.get('api_key') or request.headers.get('X-XAI-API-Key', '') or os.environ.get('XAI_API_KEY', '')
     
     if not text:
         return jsonify({'error': 'No text provided'}), 400
