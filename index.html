@@ -972,8 +972,8 @@
             <div id="settings-panel" class="settings-panel hidden-el">
                 <h3>API Configuration</h3>
                 <div class="input-group settings-field-group">
-                    <label for="settings-api-key" class="settings-api-key-label">Groq API Key</label>
-                    <input type="password" id="settings-api-key" placeholder="Enter Groq API key" class="select-input" value="">
+                    <label for="settings-api-key" class="settings-api-key-label">xAI API Key</label>
+                    <input type="password" id="settings-api-key" placeholder="Enter xAI API key" class="select-input" value="">
                 </div>
                 <div class="settings-actions">
                     <button id="settings-save-btn">Save</button>
@@ -1006,7 +1006,7 @@
                     <label for="summarizer-type">Engine:</label>
                     <select id="summarizer-type" class="select-input">
                         <option value="nltk">Local NLTK (Extractive)</option>
-                        <option value="gemini">Groq AI (Abstractive)</option>
+                        <option value="grok">xAI Grok (Abstractive)</option>
                     </select>
                 </div>
                 <div class="sentence-count">
@@ -1173,7 +1173,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // ── API Key Storage and Drawer ──────────────────────────────────────────
-            const STORAGE_KEY = 'summa_gemini_api_key';
+            const STORAGE_KEY = 'summa_xai_api_key';
             
             function getApiKey() {
                 return localStorage.getItem(STORAGE_KEY) || "";
@@ -1250,8 +1250,8 @@
                     let response;
                     const headers = { 'Content-Type': 'application/json' };
                     
-                    if (engine === 'gemini') {
-                        response = await fetch('/summarize_gemini', {
+                    if (engine === 'grok') {
+                        response = await fetch('/summarize_grok', {
                             method: 'POST',
                             headers: headers,
                             body: JSON.stringify({ 
