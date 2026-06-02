@@ -690,267 +690,9 @@
             opacity: 1;
         }
 
-        /* ── Settings Drawer & Custom Word Explorer ──────────────────────────── */
-        .container {
-            position: relative;
-        }
-
-        .settings-container {
-            position: absolute;
-            top: 2rem;
-            right: 0;
-            z-index: 1000;
-        }
-
-        .settings-toggle-btn {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid var(--glass-border);
-            padding: 0.6rem;
-            border-radius: 50%;
-            color: var(--text-muted);
-            cursor: pointer;
-            box-shadow: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .settings-toggle-btn:hover {
-            color: var(--text-main);
-            border-color: rgba(99, 102, 241, 0.4);
-            transform: rotate(45deg);
-        }
-
-        .settings-panel {
-            position: absolute;
-            top: calc(100% + 0.5rem);
-            right: 0;
-            width: 280px;
-            background: rgba(15, 23, 42, 0.95);
-            -webkit-backdrop-filter: blur(20px);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 1.25rem;
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8);
-            animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .settings-panel h3 {
-            font-size: 0.95rem;
-            margin-bottom: 0.85rem;
-            color: #818cf8;
-            font-weight: 600;
-        }
-
-        .explorer-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        @media (max-width: 768px) {
-            .explorer-grid {
-                grid-template-columns: 1fr;
-            }
-            .settings-container {
-                top: 0.5rem;
-                right: 0.5rem;
-            }
-        }
-
-        .interactive-word {
-            background: linear-gradient(120deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
-            border-bottom: 2px dashed rgba(129, 140, 248, 0.6);
-            border-radius: 4px;
-            padding: 0 4px;
-            margin: 0 -2px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            display: inline;
-        }
-
-        .interactive-word:hover, .interactive-word.active {
-            background: linear-gradient(120deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%);
-            border-bottom-color: #c084fc;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
-            color: white;
-        }
-
-        .word-card-highlight {
-            border-color: rgba(99, 102, 241, 0.6) !important;
-            background: rgba(99, 102, 241, 0.15) !important;
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.25);
-            transform: translateX(4px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .word-tooltip {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            background: rgba(15, 23, 42, 0.9);
-            -webkit-backdrop-filter: blur(16px);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(99, 102, 241, 0.35);
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            max-width: 260px;
-            color: var(--text-main);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(99, 102, 241, 0.15);
-            font-size: 0.85rem;
-            line-height: 1.4;
-            pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            transform: translateY(5px);
-        }
-
-        .word-tooltip-title {
-            font-weight: 700;
-            color: #818cf8;
-            margin-bottom: 0.25rem;
-            font-size: 0.85rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .word-tooltip-category {
-            font-size: 0.65rem;
-            padding: 0.1rem 0.35rem;
-            border-radius: 4px;
-            background: rgba(99, 102, 241, 0.2);
-            color: #a5b4fc;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
-        .word-tooltip-summary {
-            color: var(--text-main);
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .word-tooltip-explanation {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-        }
-
-        /* Utility classes to avoid inline styles */
-        .mb-15 {
-            margin-bottom: 1.5rem !important;
-        }
-        
-        .hidden-el {
-            display: none !important;
-        }
-
-        .word-card-item {
-            border-left: 4px solid var(--primary);
-            transition: all 0.3s ease;
-        }
-
-        .word-card-header {
-            margin-bottom: 0.3rem;
-        }
-
-        .word-card-word {
-            font-size: 1.05rem;
-            color: #f8fafc;
-        }
-
-        .word-card-summary {
-            font-size: 0.85rem;
-            color: #a5b4fc;
-            font-style: italic;
-            margin-bottom: 0.5rem;
-            line-height: 1.4;
-        }
-
-        .word-card-explanation {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        .score-bar-dyn {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .badge-interactive {
-            background: rgba(99, 102, 241, 0.2) !important;
-            color: #a5b4fc !important;
-        }
-
         .hidden-init { display: none; }
         .controls-mb { margin-bottom: 1.5rem !important; }
         .card-mb { margin-bottom: 1.5rem !important; }
-
-        #settings-save-btn {
-            padding: 0.4rem 1rem;
-            font-size: 0.8rem;
-            box-shadow: none;
-            min-height: unset;
-            height: auto;
-        }
-
-        #load-explorer-sample-btn {
-            background: rgba(30, 41, 59, 0.6);
-            color: var(--text-main);
-            border: 1px solid var(--glass-border);
-            box-shadow: none;
-        }
-
-        #settings-panel {
-            display: none;
-        }
-
-        .settings-actions {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: flex-end;
-        }
-
-        .settings-field-group {
-            margin-bottom: 1rem !important;
-        }
-
-        .settings-api-key-label {
-            font-size: 0.75rem !important;
-        }
-
-        #settings-api-key {
-            width: 100%;
-        }
-
-        #explorer-result-section {
-            opacity: 1;
-            transform: none;
-            transition: none;
-        }
-
-        #explorer-annotated-text {
-            max-height: 450px;
-            font-size: 1.05rem;
-            line-height: 1.8;
-        }
-
-        .explorer-sidebar-card {
-            background: rgba(15, 23, 42, 0.4) !important;
-            border-color: var(--glass-border) !important;
-        }
-
-        #explorer-glossary {
-            max-height: 450px;
-        }
     </style>
 </head>
 <body>
@@ -958,30 +700,7 @@
     <div class="ambient-blob blob-2"></div>
     <div class="ambient-blob blob-3"></div>
     
-    <!-- Floating Word Tooltip -->
-    <div id="word-tooltip" class="word-tooltip"></div>
-
     <div class="container">
-        <!-- Floating API Settings Panel -->
-        <div class="settings-container">
-            <button id="settings-toggle" class="settings-toggle-btn" title="API Settings">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-            </button>
-            <div id="settings-panel" class="settings-panel hidden-el">
-                <h3>API Configuration</h3>
-                <div class="input-group settings-field-group">
-                    <label for="settings-api-key" class="settings-api-key-label">xAI API Key</label>
-                    <input type="password" id="settings-api-key" placeholder="Enter xAI API key" class="select-input" value="">
-                </div>
-                <div class="settings-actions">
-                    <button id="settings-save-btn">Save</button>
-                </div>
-            </div>
-        </div>
-
         <header>
             <h1>Summa AI</h1>
             <p class="subtitle">Harness the power of Natural Language Processing to distill information instantly.</p>
@@ -990,7 +709,6 @@
         <!-- Tab Navigation -->
         <nav class="tabs" id="tabs">
             <button class="tab" data-tab="summarizer">Summarizer</button>
-            <button class="tab" data-tab="explorer">AI Word Explorer</button>
             <button class="tab active" data-tab="dataset">Sample Dataset</button>
             <button class="tab" data-tab="evaluate">Evaluation</button>
         </nav>
@@ -1007,7 +725,7 @@
                     <label for="summarizer-type">Engine:</label>
                     <select id="summarizer-type" class="select-input">
                         <option value="nltk">Local NLTK (Extractive)</option>
-                        <option value="grok">xAI Grok (Abstractive)</option>
+                        <option value="gemini">Google Gemini (Abstractive)</option>
                     </select>
                 </div>
                 <div class="sentence-count">
@@ -1024,46 +742,6 @@
                 <div class="result-card">
                     <h3>Summary Output</h3>
                     <p id="summary-output"></p>
-                </div>
-            </div>
-        </main>
-
-        <!-- Tab 4: AI Word Explorer -->
-        <main class="summarizer-card tab-content" id="tab-explorer">
-            <div class="dataset-header">
-                <h2 class="section-title">AI Word &amp; Concept Explorer</h2>
-                <p class="section-desc">Analyze text to automatically extract key concepts, technical vocabulary, and entities using xAI Grok. Hover over any highlighted term in the text to see a contextual card instantly!</p>
-            </div>
-
-            <div class="input-group">
-                <label for="explorer-text">Content to Analyze</label>
-                <textarea id="explorer-text" placeholder="Paste your article or paragraph here to identify key terms..."></textarea>
-            </div>
-
-            <div class="controls mb-15">
-                <button id="load-explorer-sample-btn">
-                    <span>Load Dataset Article</span>
-                    <div class="loader" id="explorer-sample-loader"></div>
-                </button>
-                <button id="explore-btn">
-                    <span>Analyze &amp; Map Terms</span>
-                    <div class="loader" id="explorer-loader"></div>
-                </button>
-            </div>
-
-            <div class="result-section hidden-el" id="explorer-result-section">
-                <div class="explorer-grid">
-                    <!-- Text container -->
-                    <div class="result-card explorer-text-card">
-                        <h3>Interactive Article <span class="badge badge-ai badge-interactive">Interactive Tokens</span></h3>
-                        <div id="explorer-annotated-text" class="scrollable-text"></div>
-                    </div>
-
-                    <!-- Sidebar explanations -->
-                    <div class="result-card explorer-sidebar-card">
-                        <h3>Term Glossary</h3>
-                        <div id="explorer-glossary" class="eval-results-list"></div>
-                    </div>
                 </div>
             </div>
         </main>
@@ -1173,44 +851,6 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // ── API Key Storage and Drawer ──────────────────────────────────────────
-            const STORAGE_KEY = 'summa_xai_api_key';
-            
-            function getApiKey() {
-                return localStorage.getItem(STORAGE_KEY) || "";
-            }
-            
-            function setApiKey(key) {
-                localStorage.setItem(STORAGE_KEY, key);
-            }
-
-            const settingsToggle = document.getElementById('settings-toggle');
-            const settingsPanel = document.getElementById('settings-panel');
-            const settingsApiKey = document.getElementById('settings-api-key');
-            const settingsSaveBtn = document.getElementById('settings-save-btn');
-            
-            // Initial API input sync
-            settingsApiKey.value = getApiKey();
-            
-            settingsToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isHidden = settingsPanel.style.display === 'none';
-                settingsPanel.style.display = isHidden ? 'block' : 'none';
-            });
-            
-            document.addEventListener('click', (e) => {
-                if (!settingsPanel.contains(e.target) && e.target !== settingsToggle && !settingsToggle.contains(e.target)) {
-                    settingsPanel.style.display = 'none';
-                }
-            });
-            
-            settingsSaveBtn.addEventListener('click', () => {
-                const key = settingsApiKey.value.trim();
-                setApiKey(key);
-                alert('API Key saved successfully!');
-                settingsPanel.style.display = 'none';
-            });
-
             // ── Tab switching ─────────────────────────────────────────────────────
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
@@ -1251,14 +891,11 @@
                     let response;
                     const headers = { 'Content-Type': 'application/json' };
                     
-                    if (engine === 'grok') {
-                        const grokBody = { text, num_sentences: parseInt(sentences) };
-                        const storedKey = getApiKey();
-                        if (storedKey) grokBody.api_key = storedKey;
-                        response = await fetch('/summarize_grok', {
+                    if (engine === 'gemini') {
+                        response = await fetch('/summarize_gemini', {
                             method: 'POST',
                             headers: headers,
-                            body: JSON.stringify(grokBody),
+                            body: JSON.stringify({ text, num_sentences: parseInt(sentences) }),
                         });
                     } else {
                         response = await fetch('/summarize', {
@@ -1284,199 +921,6 @@
                     loader.style.display = 'none';
                 }
             });
-
-            // ── Tab 4: AI Word Explorer ───────────────────────────────────────────
-            const exploreBtn = document.getElementById('explore-btn');
-            const explorerText = document.getElementById('explorer-text');
-            const explorerLoader = document.getElementById('explorer-loader');
-            const loadExplorerSampleBtn = document.getElementById('load-explorer-sample-btn');
-            const explorerSampleLoader = document.getElementById('explorer-sample-loader');
-            const explorerResultSection = document.getElementById('explorer-result-section');
-            const explorerAnnotatedText = document.getElementById('explorer-annotated-text');
-            const explorerGlossary = document.getElementById('explorer-glossary');
-            const wordTooltip = document.getElementById('word-tooltip');
-            
-            loadExplorerSampleBtn.addEventListener('click', async () => {
-                loadExplorerSampleBtn.disabled = true;
-                if (explorerSampleLoader) explorerSampleLoader.style.display = 'inline-block';
-                
-                try {
-                    const res = await fetch(`/dataset/sample?split=test&count=1`);
-                    const data = await res.json();
-                    if (data.samples && data.samples.length > 0) {
-                        explorerText.value = data.samples[0].article;
-                    } else {
-                        alert('No articles found in the test split.');
-                    }
-                } catch (e) {
-                    console.error('Failed to load sample article:', e);
-                    alert('Failed to load sample article from dataset.');
-                } finally {
-                    loadExplorerSampleBtn.disabled = false;
-                    if (explorerSampleLoader) explorerSampleLoader.style.display = 'none';
-                }
-            });
-            
-            exploreBtn.addEventListener('click', async () => {
-                const text = explorerText.value.trim();
-                if (!text) {
-                    alert('Please enter or load some text to analyze.');
-                    return;
-                }
-                exploreBtn.disabled = true;
-                explorerLoader.style.display = 'inline-block';
-                explorerResultSection.style.display = 'none';
-                
-                try {
-                    const analyzeBody = { text };
-                    const storedKey = getApiKey();
-                    if (storedKey) analyzeBody.api_key = storedKey;
-                    const response = await fetch('/analyze_words', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(analyzeBody),
-                    });
-                    
-                    const data = await response.json();
-                    if (data.error) {
-                        alert('Analysis Error: ' + data.error);
-                        return;
-                    }
-                    
-                    const words = data.words || [];
-                    if (words.length === 0) {
-                        alert('No key terms could be identified in this text.');
-                        return;
-                    }
-                    
-                    renderExplorerResults(text, words);
-                    explorerResultSection.style.display = 'block';
-                } catch (e) {
-                    console.error('Analysis failed:', e);
-                    alert('Could not connect to the server or failed API request.');
-                } finally {
-                    exploreBtn.disabled = false;
-                    explorerLoader.style.display = 'none';
-                }
-            });
-            
-            function renderExplorerResults(originalText, words) {
-                // Sort by descending length so longer phrases get replaced first
-                const sortedWords = [...words].sort((a, b) => b.word.length - a.word.length);
-                
-                let annotatedText = originalText;
-                const placeholders = [];
-                
-                sortedWords.forEach((item, idx) => {
-                    const word = item.word;
-                    // Escape special regex chars
-                    const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                    
-                    // Match whole phrase/word (case-insensitive)
-                    const regex = new RegExp(`\\b(${escaped})\\b`, 'gi');
-                    
-                    annotatedText = annotatedText.replace(regex, (match) => {
-                        const placeholder = `__WORD_EXP_${idx}_${placeholders.length}__`;
-                        placeholders.push({
-                            placeholder,
-                            html: `<span class="interactive-word" data-word-id="word-${idx}" data-idx="${idx}">${match}</span>`
-                        });
-                        return placeholder;
-                    });
-                });
-                
-                // Swap placeholders back to real HTML
-                placeholders.forEach(p => {
-                    annotatedText = annotatedText.replace(p.placeholder, p.html);
-                });
-                
-                // Renders the interactive paragraphs
-                explorerAnnotatedText.innerHTML = annotatedText.replace(/\n/g, '<br>');
-                
-                // Render side glossary cards
-                explorerGlossary.innerHTML = words.map((item, idx) => `
-                    <div class="eval-item word-card-item" id="card-word-${idx}">
-                        <div class="eval-item-header word-card-header">
-                            <span class="eval-item-num word-card-word">${item.word}</span>
-                            <span class="word-tooltip-category">${item.category}</span>
-                        </div>
-                        <p class="word-card-summary">
-                            "${item.summary}"
-                        </p>
-                        <p class="word-card-explanation">
-                            ${item.explanation}
-                        </p>
-                    </div>
-                `).join('');
-                
-                // Attach events to interactive tokens
-                const spans = explorerAnnotatedText.querySelectorAll('.interactive-word');
-                spans.forEach(span => {
-                    const idx = span.getAttribute('data-idx');
-                    const wordId = span.getAttribute('data-word-id');
-                    const item = words[idx];
-                    const sideCard = document.getElementById(`card-${wordId}`);
-                    
-                    span.addEventListener('mouseenter', (e) => {
-                        span.classList.add('active');
-                        if (sideCard) {
-                            sideCard.classList.add('word-card-highlight');
-                            sideCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        }
-                        
-                        wordTooltip.innerHTML = `
-                            <div class="word-tooltip-title">
-                                <span>${item.word}</span>
-                                <span class="word-tooltip-category">${item.category}</span>
-                            </div>
-                            <div class="word-tooltip-summary">"${item.summary}"</div>
-                            <div class="word-tooltip-explanation">${item.explanation}</div>
-                        `;
-                        wordTooltip.style.display = 'block';
-                        positionTooltip(e);
-                    });
-                    
-                    span.addEventListener('mousemove', (e) => {
-                        positionTooltip(e);
-                    });
-                    
-                    span.addEventListener('mouseleave', () => {
-                        span.classList.remove('active');
-                        if (sideCard) {
-                            sideCard.classList.remove('word-card-highlight');
-                        }
-                        wordTooltip.style.display = 'none';
-                    });
-                    
-                    span.addEventListener('click', () => {
-                        if (sideCard) {
-                            sideCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            sideCard.style.transform = 'scale(1.05) translateX(4px)';
-                            setTimeout(() => {
-                                sideCard.style.transform = '';
-                            }, 250);
-                        }
-                    });
-                });
-            }
-            
-            function positionTooltip(e) {
-                const w = wordTooltip.offsetWidth || 260;
-                const h = wordTooltip.offsetHeight || 120;
-                let top = e.pageY - h - 15;
-                let left = e.pageX - w / 2;
-                
-                if (top < window.scrollY) {
-                    top = e.pageY + 15;
-                }
-                if (left < 10) left = 10;
-                if (left + w > window.innerWidth - 10) {
-                    left = window.innerWidth - w - 10;
-                }
-                
-                wordTooltip.style.top = `${top}px`;
-                wordTooltip.style.left = `${left}px`;
-            }
 
             // ── Tab 2: Dataset Explorer ───────────────────────────────────────────
             const loadSampleBtn = document.getElementById('load-sample-btn');

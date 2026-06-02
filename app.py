@@ -4,7 +4,7 @@ from summarizer import (
     summarize_text, get_random_sample, get_dataset_info,
     compute_rouge, evaluate_on_dataset
 )
-from grok_helper import generate_grok_summary, analyze_text_grok
+from gemini_helper import generate_gemini_summary
 import os
 from dotenv import load_dotenv
 
@@ -45,37 +45,20 @@ def summarize():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/summarize_grok', methods=['POST'])
-def summarize_grok():
-    """Generative abstractive summarization using xAI Grok API."""
+@app.route('/summarize_gemini', methods=['POST'])
+def summarize_gemini():
+    """Generative abstractive summarization using Google Gemini API."""
     data = request.get_json() or {}
     text = data.get('text', '')
     num_sentences = data.get('num_sentences', 3)
-    api_key = data.get('api_key') or request.headers.get('X-XAI-API-Key', '') or os.environ.get('XAI_API_KEY', '')
-    
+    api_key = data.get('api_key') or os.environ.get('GEMINI_API_KEY', '')
+
     if not text:
         return jsonify({'error': 'No text provided'}), 400
-        
+
     try:
-        summary = generate_grok_summary(text, int(num_sentences), api_key=api_key)
+        summary = generate_gemini_summary(text, int(num_sentences), api_key=api_key)
         return jsonify({'summary': summary})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/analyze_words', methods=['POST'])
-def analyze_words():
-    """Extract key terms and provide contextual word summaries using xAI Grok API."""
-    data = request.get_json() or {}
-    text = data.get('text', '')
-    api_key = data.get('api_key') or request.headers.get('X-XAI-API-Key', '') or os.environ.get('XAI_API_KEY', '')
-    
-    if not text:
-        return jsonify({'error': 'No text provided'}), 400
-        
-    try:
-        words_data = analyze_text_grok(text, api_key=api_key)
-        return jsonify({'words': words_data})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
