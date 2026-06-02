@@ -34,7 +34,9 @@ def _call_xai(input_list: list, api_key: str, model: str = "grok-4.3", max_token
 
     if requests:
         response = requests.post(url, json=payload, headers=headers, timeout=60)
-        response.raise_for_status()
+        if not response.ok:
+            body = response.text[:500]
+            raise RuntimeError(f"xAI API error {response.status_code}: {body}")
         data = response.json()
     else:
         req = urllib.request.Request(
@@ -48,7 +50,8 @@ def _call_xai(input_list: list, api_key: str, model: str = "grok-4.3", max_token
                 raw = fh.read().decode("utf-8")
             data = json.loads(raw)
         except urllib.error.HTTPError as exc:
-            raise RuntimeError(f"xAI API HTTP error {exc.code}: {exc.reason}") from exc
+            body = exc.read().decode("utf-8", errors="replace")[:500]
+            raise RuntimeError(f"xAI API error {exc.code}: {body}") from exc
         except Exception as exc:
             raise RuntimeError(f"xAI API request failed: {exc}") from exc
 
@@ -70,8 +73,8 @@ def generate_grok_summary(text: str, num_sentences: int = 3, api_key: str | None
     user_prompt = f"Summarize the following text in about {num_sentences} sentences:\n\n{text}"
     return _call_xai(
         input_list=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
+            {"role": "system", "content": [{"type": "input_text", "text": system_prompt}]},
+            {"role": "user", "content": [{"type": "input_text", "text": user_prompt}]},
         ],
         api_key=api_key,
         max_tokens=200 * num_sentences,
@@ -92,8 +95,8 @@ def analyze_text_grok(text: str, api_key: str | None = None) -> List[Dict[str, A
     )
     result = _call_xai(
         input_list=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
+            {"role": "system", "content": [{"type": "input_text", "text": system_prompt}]},
+            {"role": "user", "content": [{"type": "input_text", "text": user_prompt}]},
         ],
         api_key=api_key,
         max_tokens=500,
