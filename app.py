@@ -8,7 +8,7 @@ from grok_helper import generate_grok_summary, analyze_text_grok
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 app = Flask(__name__)
 CORS(app)

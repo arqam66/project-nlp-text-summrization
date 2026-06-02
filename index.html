@@ -1252,14 +1252,13 @@
                     const headers = { 'Content-Type': 'application/json' };
                     
                     if (engine === 'grok') {
+                        const grokBody = { text, num_sentences: parseInt(sentences) };
+                        const storedKey = getApiKey();
+                        if (storedKey) grokBody.api_key = storedKey;
                         response = await fetch('/summarize_grok', {
                             method: 'POST',
                             headers: headers,
-                            body: JSON.stringify({ 
-                                text, 
-                                num_sentences: parseInt(sentences),
-                                api_key: getApiKey()
-                            }),
+                            body: JSON.stringify(grokBody),
                         });
                     } else {
                         response = await fetch('/summarize', {
@@ -1329,13 +1328,13 @@
                 explorerResultSection.style.display = 'none';
                 
                 try {
+                    const analyzeBody = { text };
+                    const storedKey = getApiKey();
+                    if (storedKey) analyzeBody.api_key = storedKey;
                     const response = await fetch('/analyze_words', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            text,
-                            api_key: getApiKey()
-                        })
+                        body: JSON.stringify(analyzeBody),
                     });
                     
                     const data = await response.json();
