@@ -141,6 +141,8 @@ def summarize_text(text, num_sentences=3):
                     sentence_scores[sent] += word_frequencies[word]
 
     # Get summary — clamp to available sentences
+    if num_sentences < 1:
+        num_sentences = 1
     num_sentences = min(num_sentences, len(sentence_scores))
     if num_sentences == 0:
         return text
