@@ -1324,11 +1324,6 @@
                     alert('Please enter or load some text to analyze.');
                     return;
                 }
-                if (!getApiKey()) {
-                    alert('Word Explorer requires an xAI API key. Click the gear icon ⚙️ (top-right) to set one.');
-                    return;
-                }
-                
                 exploreBtn.disabled = true;
                 explorerLoader.style.display = 'inline-block';
                 explorerResultSection.style.display = 'none';
