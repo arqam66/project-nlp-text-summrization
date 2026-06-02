@@ -1,3 +1,4 @@
+import math
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
@@ -103,54 +104,145 @@ def get_dataset_info():
 
 # ── Core summarization ─────────────────────────────────────────────────────
 
+def _get_content_words(text):
+    """Return list of lowercase content words (no stopwords, no punctuation)."""
+    stop_words = set(stopwords.words('english'))
+    return [
+        w.lower() for w in word_tokenize(text)
+        if w.isalpha() and w.lower() not in stop_words
+    ]
+
+
+def _jaccard_similarity(a_words, b_words):
+    """Jaccard similarity between two sets of content words."""
+    if not a_words or not b_words:
+        return 0
+    a_set, b_set = set(a_words), set(b_words)
+    inter = len(a_set & b_set)
+    union = len(a_set | b_set)
+    return inter / union if union else 0
+
+
+CUE_WORDS = {
+    'concluded', 'conclusion', 'demonstrated', 'discovered', 'essential',
+    'finding', 'findings', 'found', 'identified', 'important', 'key',
+    'notably', 'proposed', 'proves', 'reported', 'result', 'results',
+    'revealed', 'reveals', 'showed', 'shows', 'significant', 'suggests',
+    'summary', 'therefore', 'thus', 'vital',
+}
+
+
 def summarize_text(text, num_sentences=3):
-    """Extractive summarization using word-frequency scoring."""
+    """
+    Meaning-focused extractive summarizer.
+
+    Scoring:
+      - Keyword importance via log-IDF (rare meaningful words weighted higher)
+      - Keyword coverage (sentences covering more key topics score higher)
+      - Position bias (first sentences capture the lede)
+      - Cue-word boost (findings, conclusions, results)
+      - MMR diversity (no two similar sentences selected)
+      - Adaptive count based on text length
+    """
     if not text:
         return ""
 
-    # Preprocessing
-    stop_words = set(stopwords.words('english'))
-    words = word_tokenize(text.lower())
-    
-    # Calculate word frequency
-    word_frequencies = {}
-    for word in words:
-        if word.isalnum() and word not in stop_words:
-            if word not in word_frequencies:
-                word_frequencies[word] = 1
-            else:
-                word_frequencies[word] += 1
-
-    # Normalize frequency
-    if not word_frequencies:
-        return text[:100] + "..." if len(text) > 100 else text
-        
-    max_frequency = max(word_frequencies.values())
-    for word in word_frequencies.keys():
-        word_frequencies[word] = (word_frequencies[word] / max_frequency)
-
-    # Sentence scoring
     sentences = sent_tokenize(text)
-    sentence_scores = {}
-    for sent in sentences:
-        for word in word_tokenize(sent.lower()):
-            if word in word_frequencies:
-                if sent not in sentence_scores:
-                    sentence_scores[sent] = word_frequencies[word]
-                else:
-                    sentence_scores[sent] += word_frequencies[word]
-
-    # Get summary — clamp to available sentences
-    if num_sentences < 1:
-        num_sentences = 1
-    num_sentences = min(num_sentences, len(sentence_scores))
-    if num_sentences == 0:
+    sentences = [s.strip() for s in sentences if len(s.strip().split()) > 3]
+    if not sentences:
         return text
 
-    top_sentences = set(heapq.nlargest(num_sentences, sentence_scores, key=sentence_scores.get))
-    summary_sentences = [sent for sent in sentences if sent in top_sentences]
-    summary = ' '.join(summary_sentences)
-    
+    # Adaptive sentence count — at least 2, at most 6, based on text size
+    word_count = len(text.split())
+    auto_k = max(2, min(6, word_count // 80))
+    k = min(num_sentences or auto_k, len(sentences))
+    if k < 1:
+        k = 1
+    if len(sentences) <= k:
+        return ' '.join(sentences)
+
+    n = len(sentences)
+
+    # ── 1. Build vocab ───────────────────────────────────────────────────
+    word_tf = {}
+    word_sf = {}
+    sent_words = []
+
+    for sent in sentences:
+        cw = _get_content_words(sent)
+        sent_words.append(cw)
+        seen = set()
+        for w in cw:
+            word_tf[w] = word_tf.get(w, 0) + 1
+            if w not in seen:
+                word_sf[w] = word_sf.get(w, 0) + 1
+                seen.add(w)
+
+    if not word_tf:
+        return sentences[0]
+
+    max_tf = max(word_tf.values())
+    n_sents = n
+
+    # ── 2. Keyword importance (TF-logIDF) ────────────────────────────────
+    keyword_weight = {}
+    for w, tf in word_tf.items():
+        idf = math.log((1 + n_sents) / (1 + word_sf[w])) + 1
+        keyword_weight[w] = (tf / max_tf) * idf
+
+    # Top 15 keywords define the doc's main topics
+    top_keywords = set(
+        w for w, _ in heapq.nlargest(15, keyword_weight.items(), key=lambda x: x[1])
+    )
+
+    # ── 3. Score each sentence ────────────────────────────────────────────
+    raw_scores = []
+    for i, sent in enumerate(sentences):
+        cw = sent_words[i]
+        if not cw:
+            raw_scores.append(0)
+            continue
+
+        kw_score = sum(keyword_weight.get(w, 0) for w in cw) / len(cw)
+
+        coverage = len(top_keywords & set(cw)) / len(top_keywords) if top_keywords else 0
+
+        pos_score = 1.0 / (1 + i)
+
+        cue_score = 1.5 if any(w in CUE_WORDS for w in cw) else 0.0
+
+        # Bonus for sentences containing multiple top keywords
+        kw_count = sum(1 for w in cw if w in top_keywords)
+        density = kw_count / len(cw) if cw else 0
+
+        score = (kw_score * 0.45 + coverage * 0.20 + pos_score * 0.15 + cue_score * 0.10 + density * 0.10)
+        raw_scores.append(score)
+
+    # ── 4. Pick sentences with MMR ───────────────────────────────────────
+    selected = []
+    candidates = set(range(n))
+
+    for _ in range(k):
+        best_idx = -1
+        best_val = -9999.0
+        for j in candidates:
+            sim = 0.0
+            if selected:
+                sim = max(
+                    _jaccard_similarity(sent_words[j], sent_words[s])
+                    for s in selected
+                )
+            mmr = 0.7 * raw_scores[j] - 0.3 * sim
+            if mmr > best_val:
+                best_val = mmr
+                best_idx = j
+        if best_idx != -1:
+            selected.append(best_idx)
+            candidates.remove(best_idx)
+
+    # ── 5. Present by original order for coherent flow ───────────────────
+    selected.sort()
+    summary = ' '.join(sentences[i] for i in selected)
     return summary
 
 

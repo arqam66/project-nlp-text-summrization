@@ -4,11 +4,6 @@ from summarizer import (
     summarize_text, get_random_sample, get_dataset_info,
     compute_rouge, evaluate_on_dataset
 )
-from gemini_helper import generate_gemini_summary
-import os
-from dotenv import load_dotenv
-
-load_dotenv(override=True)
 
 app = Flask(__name__)
 CORS(app)
@@ -40,24 +35,6 @@ def summarize():
     
     try:
         summary = summarize_text(text, int(num_sentences))
-        return jsonify({'summary': summary})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/summarize_gemini', methods=['POST'])
-def summarize_gemini():
-    """Generative abstractive summarization using Google Gemini API."""
-    data = request.get_json() or {}
-    text = data.get('text', '')
-    num_sentences = data.get('num_sentences', 3)
-    api_key = data.get('api_key') or os.environ.get('GEMINI_API_KEY', '')
-
-    if not text:
-        return jsonify({'error': 'No text provided'}), 400
-
-    try:
-        summary = generate_gemini_summary(text, int(num_sentences), api_key=api_key)
         return jsonify({'summary': summary})
     except Exception as e:
         return jsonify({'error': str(e)}), 500

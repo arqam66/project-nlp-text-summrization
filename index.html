@@ -722,13 +722,6 @@
 
             <div class="controls">
                 <div class="sentence-count">
-                    <label for="summarizer-type">Engine:</label>
-                    <select id="summarizer-type" class="select-input">
-                        <option value="nltk">Local NLTK (Extractive)</option>
-                        <option value="gemini">Google Gemini (Abstractive)</option>
-                    </select>
-                </div>
-                <div class="sentence-count">
                     <label for="num-sentences">Length (Sentences):</label>
                     <input type="number" id="num-sentences" value="3" min="1" max="10">
                 </div>
@@ -868,7 +861,6 @@
             const summarizeBtn = document.getElementById('summarize-btn');
             const inputText = document.getElementById('input-text');
             const numSentences = document.getElementById('num-sentences');
-            const summarizerType = document.getElementById('summarizer-type');
             const resultSection = document.getElementById('result-section');
             const summaryOutput = document.getElementById('summary-output');
             const loader = document.getElementById('loader');
@@ -876,7 +868,6 @@
             summarizeBtn.addEventListener('click', async () => {
                 const text = inputText.value.trim();
                 const sentences = numSentences.value;
-                const engine = summarizerType.value;
 
                 if (!text) {
                     alert('Please enter some text to summarize.');
@@ -888,22 +879,11 @@
                 resultSection.classList.remove('visible');
 
                 try {
-                    let response;
-                    const headers = { 'Content-Type': 'application/json' };
-                    
-                    if (engine === 'gemini') {
-                        response = await fetch('/summarize_gemini', {
-                            method: 'POST',
-                            headers: headers,
-                            body: JSON.stringify({ text, num_sentences: parseInt(sentences) }),
-                        });
-                    } else {
-                        response = await fetch('/summarize', {
-                            method: 'POST',
-                            headers: headers,
-                            body: JSON.stringify({ text, num_sentences: parseInt(sentences) }),
-                        });
-                    }
+                    const response = await fetch('/summarize', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text, num_sentences: parseInt(sentences) }),
+                    });
                     
                     const data = await response.json();
 
