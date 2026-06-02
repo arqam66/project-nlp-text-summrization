@@ -7,33 +7,34 @@
     <meta name="description" content="NLP-powered text summarization tool with Sample Dataset evaluation">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-dark: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(15, 23, 42, 0.08);
             --success: #10b981;
             --warning: #f59e0b;
             --info: #3b82f6;
+            
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
+            font-family: var(--font-body);
         }
 
         body {
             background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -55,19 +56,68 @@
         }
 
         h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: linear-gradient(to right, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-            letter-spacing: -0.05em;
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.03em;
         }
 
         p.subtitle {
             color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 1.05rem;
+            font-weight: 400;
+        }
+
+        /* ── Alert Banner ──────────────────────────────────────────────────────── */
+        .alert-banner {
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            font-weight: 500;
+        }
+        .alert-banner.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #ef4444;
+        }
+        .alert-banner.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            color: #10b981;
+        }
+        .alert-banner .close-btn {
+            background: none;
+            border: none;
+            color: inherit;
+            font-weight: 800;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+        }
+        .alert-banner .close-btn:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ── Empty State ───────────────────────────────────────────────────────── */
+        .empty-state {
+            padding: 3rem 1.5rem;
+            text-align: center;
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 1.5rem;
         }
 
         /* ── Tabs ──────────────────────────────────────────────────────────────── */
@@ -81,29 +131,27 @@
         }
 
         .tab {
-            background: rgba(30, 41, 59, 0.5);
+            background: rgba(15, 23, 42, 0.04);
             color: var(--text-muted);
-            border: 1px solid var(--glass-border);
-            padding: 0.65rem 1.5rem;
-            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.25rem;
+            border-radius: 6px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: none;
+            transition: all 0.2s ease;
         }
 
         .tab:hover {
             color: var(--text-main);
-            border-color: rgba(99, 102, 241, 0.4);
-            transform: none;
+            border-color: rgba(99, 102, 241, 0.3);
         }
 
         .tab.active {
-            background: linear-gradient(135deg, var(--primary), #a855f7);
+            background: #0f172a;
             color: white;
             border-color: transparent;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            box-shadow: none;
         }
 
         .tab-content {
@@ -114,17 +162,14 @@
             display: block;
         }
 
-        /* ── Cards ─────────────────────────────────────────────────────────────── */
+        /* ── Cards & Structure ─────────────────────────────────────────────────── */
 
         .summarizer-card {
             background: var(--card-bg);
-            -webkit-backdrop-filter: blur(12px);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             padding: 2.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
         }
 
         .input-group {
@@ -133,10 +178,11 @@
 
         label {
             display: block;
+            font-family: var(--font-display);
             font-weight: 600;
             margin-bottom: 0.75rem;
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -144,20 +190,20 @@
         textarea {
             width: 100%;
             height: 250px;
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             padding: 1.25rem;
             color: var(--text-main);
-            font-size: 1rem;
+            font-size: 0.95rem;
             resize: none;
             outline: none;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: border-color 0.2s ease;
         }
 
         textarea:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            box-shadow: none;
         }
 
         .controls {
@@ -181,43 +227,51 @@
 
         input[type="number"] {
             width: 60px;
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             padding: 0.5rem;
             color: var(--text-main);
             outline: none;
-            font-family: 'Outfit', sans-serif;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--primary);
         }
 
         .select-input {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             padding: 0.5rem 0.75rem;
             color: var(--text-main);
             outline: none;
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.9rem;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
             cursor: pointer;
         }
 
+        .select-input:focus {
+            border-color: var(--primary);
+        }
+
         .select-input option {
-            background: #1e293b;
+            background: #ffffff;
             color: var(--text-main);
         }
 
         button {
-            background: linear-gradient(135deg, var(--primary), #a855f7);
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 0.85rem 2rem;
-            border-radius: 12px;
+            padding: 0.75rem 1.75rem;
+            border-radius: 6px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+            transition: background-color 0.2s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -225,25 +279,19 @@
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
+            background: var(--primary-hover);
         }
 
         button:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
         .result-section {
             margin-top: 2rem;
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
         }
 
         .result-section.visible {
@@ -252,16 +300,19 @@
         }
 
         .result-card {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 16px;
-            padding: 1.5rem;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 1.5rem 0;
+            border-top: 1px solid var(--border-color);
         }
 
         .result-card h3 {
             margin-bottom: 1rem;
-            font-size: 1.15rem;
-            color: #818cf8;
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #4f46e5;
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -269,109 +320,99 @@
 
         #summary-output {
             line-height: 1.6;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
+            color: #334155;
         }
 
-        /* ── Dataset specific ──────────────────────────────────────────────────── */
+        /* ── Dataset Explorer & Evaluation ─────────────────────────────────────── */
 
         .section-title {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 600;
             color: var(--text-main);
             margin-bottom: 0.5rem;
         }
 
         .section-desc {
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             margin-bottom: 1.5rem;
             line-height: 1.5;
         }
 
         .dataset-stats {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             flex-wrap: wrap;
             margin-bottom: 1.5rem;
         }
 
         .stat-chip {
-            background: rgba(99, 102, 241, 0.15);
-            border: 1px solid rgba(99, 102, 241, 0.25);
-            border-radius: 10px;
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-            color: #a5b4fc;
-            font-weight: 600;
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 4px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            color: #4f46e5;
+            font-weight: 500;
+            font-family: var(--font-mono);
         }
 
         .stat-chip strong {
-            color: #818cf8;
+            color: #4338ca;
+            font-weight: 600;
         }
 
         .scrollable-text {
             max-height: 250px;
             overflow-y: auto;
             line-height: 1.6;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             padding-right: 0.5rem;
+            color: #334155;
         }
 
         .scrollable-text::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
         }
 
         .scrollable-text::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.3);
-            border-radius: 3px;
+            background: rgba(15, 23, 42, 0.05);
         }
 
         .scrollable-text::-webkit-scrollbar-thumb {
-            background: rgba(99, 102, 241, 0.4);
-            border-radius: 3px;
-        }
-
-        .reference-card {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.25);
+            background: rgba(15, 23, 42, 0.1);
+            border-radius: 2px;
         }
 
         .reference-card h3 {
-            color: #34d399;
-        }
-
-        .generated-card {
-            background: rgba(168, 85, 247, 0.1);
-            border-color: rgba(168, 85, 247, 0.25);
+            color: #047857;
         }
 
         .generated-card h3 {
-            color: #c084fc;
+            color: #7e22ce;
         }
 
         .badge {
-            font-size: 0.7rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 6px;
-            background: rgba(16, 185, 129, 0.2);
-            color: #6ee7b7;
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #047857;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            font-family: var(--font-display);
         }
 
         .badge-ai {
-            background: rgba(168, 85, 247, 0.2);
-            color: #d8b4fe;
-        }
-
-        .scores-card {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.25);
+            background: rgba(168, 85, 247, 0.1);
+            color: #7e22ce;
         }
 
         .scores-card h3 {
-            color: #60a5fa;
+            color: #1d4ed8;
         }
 
         .scores-grid {
@@ -381,33 +422,34 @@
         }
 
         .score-item {
-            background: rgba(15, 23, 42, 0.4);
-            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             padding: 1rem;
             text-align: center;
         }
 
         .score-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
         .score-value {
-            font-size: 1.6rem;
-            font-weight: 800;
-            background: linear-gradient(to right, #60a5fa, #818cf8);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            color: var(--text-main);
         }
 
         .score-details {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             margin-top: 0.35rem;
+            font-family: var(--font-mono);
         }
 
         /* ── Evaluation results list ───────────────────────────────────────────── */
@@ -418,16 +460,11 @@
         }
 
         .eval-item {
-            background: rgba(15, 23, 42, 0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             padding: 1rem 1.25rem;
             margin-bottom: 0.75rem;
-            transition: border-color 0.2s ease;
-        }
-
-        .eval-item:hover {
-            border-color: rgba(99, 102, 241, 0.3);
         }
 
         .eval-item-header {
@@ -438,27 +475,29 @@
         }
 
         .eval-item-num {
-            font-weight: 700;
-            color: #818cf8;
-            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4f46e5;
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
         }
 
         .eval-item-scores {
             display: flex;
-            gap: 0.75rem;
-            font-size: 0.8rem;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
         }
 
         .eval-score-tag {
-            background: rgba(99, 102, 241, 0.15);
-            padding: 0.2rem 0.5rem;
-            border-radius: 6px;
-            color: #a5b4fc;
-            font-weight: 600;
+            background: rgba(99, 102, 241, 0.05);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            color: #4f46e5;
+            font-weight: 500;
         }
 
         .eval-item-preview {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             line-height: 1.4;
         }
@@ -467,12 +506,12 @@
 
         .loader {
             display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
@@ -485,7 +524,7 @@
             text-align: center;
             margin-top: 3rem;
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         /* ── Responsive ────────────────────────────────────────────────────────── */
@@ -496,7 +535,7 @@
             }
 
             h1 {
-                font-size: 2.5rem;
+                font-size: 2.25rem;
             }
 
             .controls {
@@ -522,88 +561,12 @@
             }
         }
 
-        /* ── Premium Aesthetic Upgrades ────────────────────────────────────────── */
+        /* ── Motion & Interaction ──────────────────────────────────────────────── */
 
-        body {
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Glowing background blobs */
-        .ambient-blob {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.08;
-            z-index: -1;
-            pointer-events: none;
-            animation: float-around 25s infinite alternate ease-in-out;
-        }
-
-        .blob-1 {
-            width: 500px;
-            height: 500px;
-            background: var(--primary);
-            top: -10%;
-            left: -15%;
-        }
-
-        .blob-2 {
-            width: 600px;
-            height: 600px;
-            background: #a855f7;
-            bottom: -15%;
-            right: -20%;
-            animation-delay: -7s;
-        }
-
-        .blob-3 {
-            width: 400px;
-            height: 400px;
-            background: var(--info);
-            top: 35%;
-            left: 45%;
-            animation-delay: -14s;
-        }
-
-        @keyframes float-around {
-            0% {
-                transform: translate(0, 0) scale(1);
-            }
-            100% {
-                transform: translate(80px, 60px) scale(1.15);
-            }
-        }
-
-        /* Card accent top border strip */
-        .summarizer-card {
-            position: relative;
-            overflow: hidden;
-            border-color: rgba(255, 255, 255, 0.06);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .summarizer-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), #a855f7, var(--info));
-            z-index: 10;
-        }
-
-        .summarizer-card:hover {
-            border-color: rgba(99, 102, 241, 0.2);
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
-        }
-
-        /* Smooth Tab Slide-up Transition */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(15px);
+                transform: translateY(8px);
             }
             to {
                 opacity: 1;
@@ -613,81 +576,31 @@
 
         .tab-content.active {
             display: block;
-            animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Textarea Glowing and Transitions */
-        textarea {
-            background: rgba(15, 23, 42, 0.6);
-            border-color: rgba(255, 255, 255, 0.08);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 25px rgba(99, 102, 241, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.4);
-            background: rgba(15, 23, 42, 0.7);
-        }
-
-        /* Select & Input Glowing and Transitions */
-        .select-input, input[type="number"] {
-            transition: all 0.3s ease;
-        }
-
-        .select-input:focus, input[type="number"]:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
-        }
-
-        /* ROUGE score progress bars */
         .score-bar-container {
             width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 4px;
+            height: 4px;
+            background: rgba(15, 23, 42, 0.04);
+            border-radius: 2px;
             margin: 0.6rem 0;
             overflow: hidden;
         }
 
         .score-bar {
             height: 100%;
-            border-radius: 4px;
-            width: 0; /* Animated via JS inline style */
-            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 2px;
+            width: 0;
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Hover animation on score cards */
         .score-item {
-            transition: transform 0.3s ease, border-color 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: border-color 0.2s ease;
         }
 
         .score-item:hover {
-            transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.08);
-            background: rgba(15, 23, 42, 0.6);
-        }
-
-        /* Buttons Hover Overlay Effects */
-        button {
-            position: relative;
-            overflow: hidden;
-        }
-
-        button::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(255, 255, 255, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        button:hover::after {
-            opacity: 1;
+            border-color: rgba(15, 23, 42, 0.15);
         }
 
         .hidden-init { display: none; }
@@ -696,14 +609,11 @@
     </style>
 </head>
 <body>
-    <div class="ambient-blob blob-1"></div>
-    <div class="ambient-blob blob-2"></div>
-    <div class="ambient-blob blob-3"></div>
-    
     <div class="container">
+        <div id="alert-banner" class="alert-banner hidden-init"></div>
         <header>
-            <h1>Summa AI</h1>
-            <p class="subtitle">Harness the power of Natural Language Processing to distill information instantly.</p>
+            <h1>Extractive Document Summarizer</h1>
+            <p class="subtitle">An offline-capable NLP engine scoring sentences by TF-IDF keyword importance, leveraging Jaccard similarity and MMR for diversity.</p>
         </header>
 
         <!-- Tab Navigation -->
@@ -766,6 +676,10 @@
                 </button>
             </div>
 
+            <div id="dataset-empty-state" class="empty-state">
+                <p>No sample loaded. Select a split and click "Load Random Article" to analyze performance.</p>
+            </div>
+
             <div class="result-section visible hidden-init" id="dataset-result-section">
                 <!-- Article -->
                 <div class="result-card card-mb">
@@ -823,6 +737,10 @@
                 </button>
             </div>
 
+            <div id="eval-empty-state" class="empty-state">
+                <p>No evaluation run yet. Select split, choose sample size, and click "Run Evaluation".</p>
+            </div>
+
             <div class="result-section visible hidden-init" id="eval-result-section">
                 <!-- Average scores -->
                 <div class="result-card scores-card card-mb">
@@ -844,12 +762,31 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // ── Alert Banner Handling ─────────────────────────────────────────────
+            const alertBanner = document.getElementById('alert-banner');
+            
+            function showAlert(message, type = 'error') {
+                alertBanner.className = `alert-banner ${type}`;
+                alertBanner.innerHTML = `
+                    <span>${message}</span>
+                    <button class="close-btn" id="close-alert-btn">&times;</button>
+                `;
+                alertBanner.classList.remove('hidden-init');
+                document.getElementById('close-alert-btn').addEventListener('click', hideAlert);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            function hideAlert() {
+                alertBanner.classList.add('hidden-init');
+            }
+
             // ── Tab switching ─────────────────────────────────────────────────────
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
+                    hideAlert();
                     tabs.forEach(t => t.classList.remove('active'));
                     tabContents.forEach(tc => tc.classList.remove('active'));
                     tab.classList.add('active');
@@ -866,11 +803,12 @@
             const loader = document.getElementById('loader');
 
             summarizeBtn.addEventListener('click', async () => {
+                hideAlert();
                 const text = inputText.value.trim();
                 const sentences = numSentences.value;
 
                 if (!text) {
-                    alert('Please enter some text to summarize.');
+                    showAlert('Please enter some text to summarize.', 'error');
                     return;
                 }
 
@@ -891,11 +829,11 @@
                         summaryOutput.textContent = data.summary;
                         resultSection.classList.add('visible');
                     } else {
-                        alert('Error: ' + (data.error || 'Failed to generate summary.'));
+                        showAlert(data.error || 'Failed to generate summary.', 'error');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Could not connect to the server. Make sure app.py is running.');
+                    showAlert('Could not connect to the server. Make sure app.py is running.', 'error');
                 } finally {
                     summarizeBtn.disabled = false;
                     loader.style.display = 'none';
@@ -911,6 +849,7 @@
             const datasetGenerated = document.getElementById('dataset-generated');
             const rougeScores = document.getElementById('rouge-scores');
             const datasetInfoEl = document.getElementById('dataset-info');
+            const datasetEmptyState = document.getElementById('dataset-empty-state');
 
             // Load dataset info on page load
             async function loadDatasetInfo() {
@@ -930,11 +869,13 @@
             loadDatasetInfo();
 
             loadSampleBtn.addEventListener('click', async () => {
+                hideAlert();
                 const split = document.getElementById('dataset-split').value;
                 const sentences = parseInt(document.getElementById('dataset-num-sentences').value);
 
                 loadSampleBtn.disabled = true;
                 datasetLoader.style.display = 'inline-block';
+                datasetResultSection.classList.remove('visible');
 
                 try {
                     // Step 1: Load a random sample
@@ -942,7 +883,9 @@
                     const sampleData = await sampleRes.json();
 
                     if (!sampleData.samples || sampleData.samples.length === 0) {
-                        alert('No samples found in the dataset.');
+                        showAlert('No samples found in the dataset.', 'error');
+                        datasetEmptyState.classList.remove('hidden-init');
+                        datasetResultSection.style.display = 'none';
                         return;
                     }
 
@@ -969,10 +912,14 @@
                         rougeScores.innerHTML = renderScoreCards(sumData.rouge_scores);
                     }
 
+                    datasetEmptyState.classList.add('hidden-init');
                     datasetResultSection.style.display = 'block';
+                    datasetResultSection.classList.add('visible');
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Failed to load sample. Make sure the server is running.');
+                    showAlert('Failed to load sample. Make sure the server is running.', 'error');
+                    datasetEmptyState.classList.remove('hidden-init');
+                    datasetResultSection.style.display = 'none';
                 } finally {
                     loadSampleBtn.disabled = false;
                     datasetLoader.style.display = 'none';
@@ -985,8 +932,10 @@
             const evalResultSection = document.getElementById('eval-result-section');
             const evalAverages = document.getElementById('eval-averages');
             const evalResults = document.getElementById('eval-results');
+            const evalEmptyState = document.getElementById('eval-empty-state');
 
             runEvalBtn.addEventListener('click', async () => {
+                hideAlert();
                 const numSamples = parseInt(document.getElementById('eval-samples').value);
                 const numSent = parseInt(document.getElementById('eval-sentences').value);
                 const evalSplit = document.getElementById('eval-split').value;
@@ -994,6 +943,7 @@
                 runEvalBtn.disabled = true;
                 evalLoader.style.display = 'inline-block';
                 evalResultSection.style.display = 'none';
+                evalResultSection.classList.remove('visible');
 
                 try {
                     const res = await fetch('/dataset/evaluate', {
@@ -1008,7 +958,8 @@
                     const data = await res.json();
 
                     if (data.error) {
-                        alert('Error: ' + data.error);
+                        showAlert(data.error, 'error');
+                        evalEmptyState.classList.remove('hidden-init');
                         return;
                     }
 
@@ -1055,10 +1006,13 @@
                         </div>
                     `).join('');
 
+                    evalEmptyState.classList.add('hidden-init');
                     evalResultSection.style.display = 'block';
+                    evalResultSection.classList.add('visible');
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Evaluation failed. Make sure the server is running.');
+                    showAlert('Evaluation failed. Make sure the server is running.', 'error');
+                    evalEmptyState.classList.remove('hidden-init');
                 } finally {
                     runEvalBtn.disabled = false;
                     evalLoader.style.display = 'none';
