@@ -6,6 +6,9 @@ from summarizer import (
 )
 from grok_helper import generate_grok_summary, analyze_text_grok
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -45,7 +48,7 @@ def summarize():
 @app.route('/summarize_grok', methods=['POST'])
 def summarize_grok():
     """Generative abstractive summarization using xAI Grok API."""
-    data = request.get_json() or {} or {}
+    data = request.get_json() or {}
     text = data.get('text', '')
     num_sentences = data.get('num_sentences', 3)
     api_key = data.get('api_key') or request.headers.get('X-XAI-API-Key', '') or os.environ.get('XAI_API_KEY', '')
@@ -63,7 +66,7 @@ def summarize_grok():
 @app.route('/analyze_words', methods=['POST'])
 def analyze_words():
     """Extract key terms and provide contextual word summaries using xAI Grok API."""
-    data = request.get_json() or {} or {}
+    data = request.get_json() or {}
     text = data.get('text', '')
     api_key = data.get('api_key') or request.headers.get('X-XAI-API-Key', '') or os.environ.get('XAI_API_KEY', '')
     
@@ -131,7 +134,7 @@ def summarize_sample():
 @app.route('/dataset/evaluate', methods=['POST'])
 def evaluate():
     """Run evaluation on random dataset samples."""
-    data = request.get_json() or {} or {}
+    data = request.get_json() or {}
     num_samples = min(int(data.get('num_samples', 10)), 50)
     num_sentences = int(data.get('num_sentences', 3))
     split = data.get('split', 'test')

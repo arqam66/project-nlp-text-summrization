@@ -16,18 +16,18 @@ log = logging.getLogger(__name__)
 
 _XAI_API_BASE = "https://api.x.ai/v1"
 
-def _call_xai_chat(messages: list, api_key: str, model: str = "grok-2-1212", max_tokens: int = 500, temperature: float = 0.3) -> str:
+def _call_xai(input_list: list, api_key: str, model: str = "grok-4.3", max_tokens: int = 500, temperature: float = 0.3) -> str:
     if not api_key:
         raise ValueError("xAI API key is required")
-    url = f"{_XAI_API_BASE}/chat/completions"
+    url = f"{_XAI_API_BASE}/responses"
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}",
     }
     payload = {
         "model": model,
-        "messages": messages,
-        "max_tokens": max_tokens,
+        "input": input_list,
+        "max_output_tokens": max_tokens,
         "temperature": temperature,
     }
     log.debug("Calling xAI API with model=%s", model)
@@ -52,13 +52,14 @@ def _call_xai_chat(messages: list, api_key: str, model: str = "grok-2-1212", max
         except Exception as exc:
             raise RuntimeError(f"xAI API request failed: {exc}") from exc
 
-    choices = data.get("choices", [])
-    if not choices:
-        raise RuntimeError(f"xAI API response missing choices: {data!r}")
-    content = choices[0].get("message", {}).get("content", "")
-    if not content:
+    output = data.get("output", [])
+    if not output:
+        raise RuntimeError(f"xAI API response missing output: {data!r}")
+    content_parts = output[0].get("content", [])
+    text = "".join(part.get("text", "") for part in content_parts if part.get("type") == "output_text")
+    if not text:
         raise RuntimeError(f"xAI API response empty content: {data!r}")
-    return content.strip()
+    return text.strip()
 
 def generate_grok_summary(text: str, num_sentences: int = 3, api_key: str | None = None) -> str:
     if not text:
@@ -67,8 +68,8 @@ def generate_grok_summary(text: str, num_sentences: int = 3, api_key: str | None
         api_key = os.environ.get("XAI_API_KEY", "")
     system_prompt = "You are a helpful assistant that summarizes text accurately and concisely."
     user_prompt = f"Summarize the following text in about {num_sentences} sentences:\n\n{text}"
-    return _call_xai_chat(
-        messages=[
+    return _call_xai(
+        input_list=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
@@ -81,14 +82,16 @@ def analyze_text_grok(text: str, api_key: str | None = None) -> List[Dict[str, A
         raise ValueError("`text` must be a non-empty string")
     if not api_key:
         api_key = os.environ.get("XAI_API_KEY", "")
-    system_prompt = "You are a helpful assistant that analyzes text and extracts key terms with their frequencies."
+    system_prompt = "You are a helpful assistant that analyzes text and explains key terms."
     user_prompt = (
         f"Analyze the following text and extract the top 10 most important keywords or phrases. "
-        f"Return ONLY a JSON array of objects with keys 'word' (string) and 'frequency' (number), "
-        f"sorted by frequency descending. No additional text.\n\n{text}"
+        f"Return ONLY a JSON array of objects with these exact keys: "
+        f"'word' (the term), 'category' (like 'Technical', 'Concept', 'Entity', 'Action'), "
+        f"'summary' (one-line contextual summary), 'explanation' (2-3 sentence explanation). "
+        f"sorted by importance descending. No additional text.\n\n{text}"
     )
-    result = _call_xai_chat(
-        messages=[
+    result = _call_xai(
+        input_list=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
